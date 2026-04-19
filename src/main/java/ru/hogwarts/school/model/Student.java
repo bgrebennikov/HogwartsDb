@@ -2,9 +2,9 @@ package ru.hogwarts.school.model;
 
 public class Student {
 
-    Long id;
-    String name;
-    int age;
+    private final Long id;
+    private final String name;
+    private final int age;
 
     public Student(Long id, String name, int age) {
         this.id = id;
