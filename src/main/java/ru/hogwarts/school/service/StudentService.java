@@ -19,9 +19,7 @@ public class StudentService {
     }
 
     public Student createStudent(Student student) {
-        long id = idCounter.incrementAndGet();
-        student.setId(id);
-        return student;
+        return studentRepository.save(student);
     }
 
     public Student findStudentById(Long id) {
