@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.repository.StudentRepository;
@@ -14,6 +15,7 @@ public class StudentService {
 
     private final AtomicLong idCounter = new AtomicLong();
 
+    @Autowired
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
