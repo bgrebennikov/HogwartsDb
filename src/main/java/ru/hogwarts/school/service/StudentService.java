@@ -2,49 +2,45 @@ package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.school.Student;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class StudentService {
-    private final HashMap<Long, Student> studentHashMap = new HashMap<>();
+
+    private final StudentRepository studentRepository;
 
     private final AtomicLong idCounter = new AtomicLong();
+
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     public Student createStudent(Student student) {
         long id = idCounter.incrementAndGet();
         student.setId(id);
-        studentHashMap.put(id, student);
         return student;
     }
 
     public Student findStudentById(Long id) {
-        return studentHashMap.get(id);
+        return studentRepository.findById(id).orElseThrow();
     }
 
     public Student updateStudent(Student student) {
-        if (!studentHashMap.containsKey(student.getId())) {
-            throw new IllegalArgumentException("Student with id " + student.getId() + " not found");
-        }
-        return studentHashMap.replace(student.getId(), student) != null ? student : null;
+        return studentRepository.save(student);
     }
 
     public void deleteStudentById(Long id) {
-        if (!studentHashMap.containsKey(id)) {
-            throw new IllegalArgumentException("Student with id " + id + " not found");
-        }
-        studentHashMap.remove(id);
+        studentRepository.deleteById(id);
     }
 
     public Collection<Student> findAllStudents(
             int minAge, int maxAge
     ) {
 
-        return studentHashMap.values().stream()
-                .filter(student -> student.getAge() > minAge && student.getAge() < maxAge)
-                .toList();
+        return studentRepository.findAllByAgeBetween(minAge, maxAge);
     }
 
 }
