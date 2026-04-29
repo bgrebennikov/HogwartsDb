@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.service.FacultyService;
@@ -68,7 +70,8 @@ public class FacultyController {
             summary = "Удалить факультет",
             description = "Удаляет факультет из базы данных по ID и возвращает объект удаленного факультета."
     )
-    public Faculty deleteFaculty(@PathVariable @Parameter(description = "ID факультета для удаления") Long facultyId) {
-        return facultyService.deleteFacultyById(facultyId);
+    public ResponseEntity<String> deleteFaculty(@PathVariable @Parameter(description = "ID факультета для удаления") Long facultyId) {
+        facultyService.deleteFacultyById(facultyId);
+        return new ResponseEntity<>("removed: %s".formatted(facultyId),  HttpStatus.OK);
     }
 }
