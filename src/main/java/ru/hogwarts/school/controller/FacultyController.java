@@ -17,8 +17,10 @@ public class FacultyController {
     }
 
     @GetMapping
-    public Collection<Faculty> getFaculties() {
-        return facultyService.findAllFaculties();
+    public Collection<Faculty> getFaculties(
+            @RequestParam String color
+    ) {
+        return facultyService.findAllFaculties(color);
     }
 
     @GetMapping("/{facultyId}")

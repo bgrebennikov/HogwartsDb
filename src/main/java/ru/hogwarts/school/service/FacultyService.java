@@ -36,7 +36,14 @@ public class FacultyService {
         return facultyHashMap.remove(id);
     }
 
-    public Collection<Faculty> findAllFaculties() {
-        return Collections.unmodifiableCollection(facultyHashMap.values());
+    public Collection<Faculty> findAllFaculties(String color) {
+
+        if (color == null) {
+            return Collections.unmodifiableCollection(facultyHashMap.values());
+        }
+
+        return facultyHashMap.values().stream()
+                .filter(f -> f.getColor().equals(color))
+                .toList();
     }
 }
