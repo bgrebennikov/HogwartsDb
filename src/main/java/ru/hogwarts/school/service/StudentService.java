@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.school.Student;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,8 +38,13 @@ public class StudentService {
         studentHashMap.remove(id);
     }
 
-    public Collection<Student> findAllStudents() {
-        return Collections.unmodifiableCollection(studentHashMap.values());
+    public Collection<Student> findAllStudents(
+            int minAge, int maxAge
+    ) {
+
+        return studentHashMap.values().stream()
+                .filter(student -> student.getAge() > minAge && student.getAge() < maxAge)
+                .toList();
     }
 
 }
