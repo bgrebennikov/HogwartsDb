@@ -13,8 +13,6 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    private final AtomicLong idCounter = new AtomicLong();
-
     @Autowired
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
