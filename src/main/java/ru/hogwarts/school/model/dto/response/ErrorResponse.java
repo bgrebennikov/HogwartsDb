@@ -1,4 +1,4 @@
-package ru.hogwarts.school.model.response;
+package ru.hogwarts.school.model.dto.response;
 
 public class ErrorResponse {
     String message;
