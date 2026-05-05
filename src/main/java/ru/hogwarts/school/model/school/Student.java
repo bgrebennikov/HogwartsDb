@@ -20,7 +20,7 @@ public class Student {
     @JsonManagedReference
     private Faculty faculty;
 
-    protected Student() {
+    public Student() {
     }
 
     public Student(Long id, String name, int age) {
