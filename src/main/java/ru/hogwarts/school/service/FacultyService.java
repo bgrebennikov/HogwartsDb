@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.dto.request.FacultyRequest;
 import ru.hogwarts.school.model.dto.request.FacultyUpdateRequest;
 import ru.hogwarts.school.model.school.Faculty;
+import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
@@ -26,6 +27,14 @@ public class FacultyService {
 
     public Faculty findFacultyById(Long id) {
         return facultyRepository.findById(id).orElseThrow();
+    }
+
+    public Collection<Student> getStudentsByFacultyId(Long facultyId) {
+        return facultyRepository.findById(facultyId)
+                .map(Faculty::getStudents)
+                .orElseThrow(
+                        () -> new NoSuchElementException("Faculty with id %s not found".formatted(facultyId))
+                );
     }
 
     public Faculty updateFaculty(Long id, FacultyUpdateRequest request) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.dto.request.FacultyRequest;
 import ru.hogwarts.school.model.dto.request.FacultyUpdateRequest;
 import ru.hogwarts.school.model.school.Faculty;
+import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
@@ -49,6 +50,17 @@ public class FacultyController {
             @PathVariable @Parameter(description = "ID факультета") Long facultyId
     ) {
         return facultyService.findFacultyById(facultyId);
+    }
+
+    @GetMapping("/{facultyId}/students")
+    @Operation(
+            summary = "Получить студентов факультета",
+            description = "Возвращает список студентов факультета"
+    )
+    public ResponseEntity<Collection<Student>> getStudents(
+            @PathVariable Long facultyId
+    ){
+        return  ResponseEntity.ok(facultyService.getStudentsByFacultyId(facultyId));
     }
 
     @PostMapping
