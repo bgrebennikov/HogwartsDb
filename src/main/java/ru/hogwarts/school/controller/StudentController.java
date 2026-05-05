@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.dto.request.StudentRequest;
 import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.service.StudentService;
@@ -55,7 +56,7 @@ public class StudentController {
     )
     public ResponseEntity<Faculty> getFaculty(
             @PathVariable Long studentId
-    ){
+    ) {
         return ResponseEntity.ok(studentService.getFacultyByStudentId(studentId));
     }
 
@@ -73,8 +74,8 @@ public class StudentController {
             summary = "Обновить данные студента",
             description = "Обновляет существующую информацию о студенте. Требуется передать полный объект с корректным ID."
     )
-    public Student updateStudent(@RequestBody Student student) {
-        return studentService.updateStudent(student);
+    public ResponseEntity<Student> updateStudent(@RequestBody StudentRequest request) {
+        return ResponseEntity.ok(studentService.updateStudent(request));
     }
 
     @DeleteMapping("/{studentId}")
