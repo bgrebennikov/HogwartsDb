@@ -32,9 +32,10 @@ public class FacultyController {
             description = "Возвращает все факультеты, отфильтрованные по конкретному цвету."
     )
     public Collection<Faculty> getFaculties(
-            @RequestParam(required = false) @Parameter(description = "Цвет факультета для поиска") String color
+            @RequestParam(required = false) @Parameter(description = "Цвет факультета для поиска") String color,
+            @RequestParam(required = false) @Parameter(description = "Имя факультета для поиска") String name
     ) {
-        return facultyService.findAllFaculties(color);
+        return facultyService.findAllFaculties(color, name);
     }
 
     @GetMapping("/{facultyId}")
@@ -77,6 +78,6 @@ public class FacultyController {
     )
     public ResponseEntity<String> deleteFaculty(@PathVariable @Parameter(description = "ID факультета для удаления") Long facultyId) {
         facultyService.deleteFacultyById(facultyId);
-        return new ResponseEntity<>("removed: %s".formatted(facultyId),  HttpStatus.OK);
+        return new ResponseEntity<>("removed: %s".formatted(facultyId), HttpStatus.OK);
     }
 }

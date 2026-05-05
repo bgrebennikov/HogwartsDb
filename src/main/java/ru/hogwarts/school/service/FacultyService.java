@@ -47,11 +47,12 @@ public class FacultyService {
         facultyRepository.deleteById(id);
     }
 
-    public Collection<Faculty> findAllFaculties(String color) {
-        if (color == null) {
+    public Collection<Faculty> findAllFaculties(String name, String color) {
+        if ((name == null || name.isBlank()) && (color == null || color.isBlank())) {
             return facultyRepository.findAll();
         }
-        return facultyRepository.findAllByColorIgnoreCase(color);
+
+        return facultyRepository.findAllByColorIgnoreCaseOrColorIgnoreCase(name, color);
     }
 
     private Faculty asEntity(FacultyRequest dto) {
