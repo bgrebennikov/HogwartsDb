@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.dto.request.StudentRequest;
@@ -23,7 +25,25 @@ public class StudentService {
         this.facultyRepository = facultyRepository;
     }
 
-    public Student createStudent(Student student) {
+    public Student createStudent(StudentRequest request) {
+        Student exists = studentRepository.findById(request.id()).orElse(null);
+        if (exists != null) {
+            throw new EntityExistsException("Student already exists");
+        }
+
+
+        Student student = new Student();
+        student.setName(request.name());
+        student.setAge(request.age());
+
+        if (request.faculty() != null) {
+            Faculty faculty = facultyRepository.findById(request.faculty()).orElseThrow(
+                    () -> new NoSuchElementException("Faculty not found")
+            );
+            student.setFaculty(faculty);
+        }
+
+
         return studentRepository.save(student);
     }
 

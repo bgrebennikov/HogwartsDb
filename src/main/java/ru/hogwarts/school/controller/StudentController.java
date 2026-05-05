@@ -65,7 +65,7 @@ public class StudentController {
             summary = "Создать нового студента",
             description = "Принимает объект Student в формате JSON и сохраняет его в базе данных."
     )
-    public Student createStudent(@RequestBody Student student) {
+    public Student createStudent(@RequestBody StudentRequest student) {
         return studentService.createStudent(student);
     }
 
