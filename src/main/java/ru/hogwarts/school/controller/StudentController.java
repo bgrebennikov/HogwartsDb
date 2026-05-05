@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -44,6 +46,17 @@ public class StudentController {
     @ApiResponse(responseCode = "404", description = "Студент с таким ID не существует")
     public Student findStudentById(@PathVariable @Parameter(description = "ID студента") Long studentId) {
         return studentService.findStudentById(studentId);
+    }
+
+    @GetMapping("/{studentId}/faculty")
+    @Operation(
+            summary = "Получить факультет студента",
+            description = "Возвращает подробную информацию и факультете в котором учится студент"
+    )
+    public ResponseEntity<Faculty> getFaculty(
+            @PathVariable Long studentId
+    ){
+        return ResponseEntity.ok(studentService.getFacultyByStudentId(studentId));
     }
 
     @PostMapping
