@@ -1,10 +1,11 @@
 package ru.hogwarts.school.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.model.dto.request.StudentRequest;
 import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
@@ -14,10 +15,12 @@ import java.util.NoSuchElementException;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final FacultyRepository facultyRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, FacultyRepository facultyRepository) {
         this.studentRepository = studentRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     public Student createStudent(Student student) {
@@ -37,8 +40,23 @@ public class StudentService {
     }
 
 
-    public Student updateStudent(Student student) {
-        return studentRepository.save(student);
+    public Student updateStudent(StudentRequest request) {
+        Student existingStudent = studentRepository.findById(request.id())
+                .orElseThrow(() -> new NoSuchElementException("Student with id %s not found".formatted(request.id())));
+
+        existingStudent.setName(request.name());
+        existingStudent.setAge(request.age());
+
+        if (request.faculty() != null) {
+            Faculty faculty = facultyRepository.findById(request.faculty())
+                    .orElseThrow(() -> new NoSuchElementException("Faculty with id %s not found".formatted(request.faculty())));
+            existingStudent.setFaculty(faculty);
+        } else {
+            existingStudent.setFaculty(null);
+        }
+
+        return studentRepository.save(existingStudent);
+
     }
 
     public void deleteStudentById(Long id) {
