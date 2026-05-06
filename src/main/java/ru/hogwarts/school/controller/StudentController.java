@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.dto.request.StudentRequest;
+import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -46,12 +48,23 @@ public class StudentController {
         return studentService.findStudentById(studentId);
     }
 
+    @GetMapping("/{studentId}/faculty")
+    @Operation(
+            summary = "Получить факультет студента",
+            description = "Возвращает подробную информацию и факультете в котором учится студент"
+    )
+    public Faculty getFaculty(
+            @PathVariable Long studentId
+    ) {
+        return studentService.getFacultyByStudentId(studentId);
+    }
+
     @PostMapping
     @Operation(
             summary = "Создать нового студента",
             description = "Принимает объект Student в формате JSON и сохраняет его в базе данных."
     )
-    public Student createStudent(@RequestBody Student student) {
+    public Student createStudent(@RequestBody StudentRequest student) {
         return studentService.createStudent(student);
     }
 
@@ -60,8 +73,8 @@ public class StudentController {
             summary = "Обновить данные студента",
             description = "Обновляет существующую информацию о студенте. Требуется передать полный объект с корректным ID."
     )
-    public Student updateStudent(@RequestBody Student student) {
-        return studentService.updateStudent(student);
+    public Student updateStudent(@RequestBody StudentRequest request) {
+        return studentService.updateStudent(request);
     }
 
     @DeleteMapping("/{studentId}")
