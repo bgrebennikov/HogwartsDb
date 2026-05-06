@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.dto.request.FacultyRequest;
 import ru.hogwarts.school.model.dto.request.FacultyUpdateRequest;
@@ -57,10 +55,10 @@ public class FacultyController {
             summary = "Получить студентов факультета",
             description = "Возвращает список студентов факультета"
     )
-    public ResponseEntity<Collection<Student>> getStudents(
+    public Collection<Student> getStudents(
             @PathVariable Long facultyId
-    ){
-        return  ResponseEntity.ok(facultyService.getStudentsByFacultyId(facultyId));
+    ) {
+        return facultyService.getStudentsByFacultyId(facultyId);
     }
 
     @PostMapping
@@ -77,10 +75,10 @@ public class FacultyController {
             summary = "Обновить данные факультета",
             description = "Изменяет параметры существующего факультета."
     )
-    public ResponseEntity<Faculty> updateFaculty(
+    public Faculty updateFaculty(
             @PathVariable Long id,
             @Valid @RequestBody FacultyUpdateRequest faculty) {
-        return ResponseEntity.ok(facultyService.updateFaculty(id, faculty));
+        return facultyService.updateFaculty(id, faculty);
     }
 
     @DeleteMapping("/{facultyId}")
@@ -88,8 +86,7 @@ public class FacultyController {
             summary = "Удалить факультет",
             description = "Удаляет факультет из базы данных по ID и возвращает объект удаленного факультета."
     )
-    public ResponseEntity<String> deleteFaculty(@PathVariable @Parameter(description = "ID факультета для удаления") Long facultyId) {
+    public void deleteFaculty(@PathVariable @Parameter(description = "ID факультета для удаления") Long facultyId) {
         facultyService.deleteFacultyById(facultyId);
-        return new ResponseEntity<>("removed: %s".formatted(facultyId), HttpStatus.OK);
     }
 }
