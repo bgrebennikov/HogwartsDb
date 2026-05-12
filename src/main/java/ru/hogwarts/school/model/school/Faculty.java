@@ -26,11 +26,15 @@ public class Faculty {
         this.color = color;
     }
 
-    protected Faculty() {
+    public Faculty() {
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 
@@ -64,5 +68,9 @@ public class Faculty {
 
     public Collection<Student> getStudents() {
         return students;
+    }
+
+    public void setStudents(Collection<Student> students) {
+        this.students = students;
     }
 }
