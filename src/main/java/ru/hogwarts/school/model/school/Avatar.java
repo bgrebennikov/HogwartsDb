@@ -26,6 +26,10 @@ public class Avatar {
     public Avatar() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getFilePath() {
         return filePath;
     }
