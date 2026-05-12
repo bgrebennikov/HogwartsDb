@@ -67,4 +67,9 @@ public class AvatarController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteAvatar(@PathVariable Long id) {
+        avatarService.deleteAvatar(id);
+    }
+
 }

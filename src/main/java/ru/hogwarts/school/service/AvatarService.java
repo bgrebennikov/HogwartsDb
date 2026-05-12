@@ -1,6 +1,8 @@
 package ru.hogwarts.school.service;
 
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 @Transactional
 public class AvatarService {
 
+    private static final Logger log = LoggerFactory.getLogger(AvatarService.class);
     private final AvatarRepository avatarRepository;
     private final StudentRepository studentRepository;
 
@@ -110,5 +113,25 @@ public class AvatarService {
 
     private String getExtensions(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    @Transactional
+    public void deleteAvatar(Long studentId) {
+
+        Avatar avatar = avatarRepository.findByStudentId(studentId).orElseThrow(
+                () -> new NoSuchElementException("Avatar for student id: %s not found".formatted(studentId))
+        );
+
+        String filePath = avatar.getFilePath();
+
+        avatarRepository.delete(avatar);
+
+        try {
+            Files.deleteIfExists(Path.of(filePath));
+        } catch (IOException e) {
+            log.error("Cannot delete avatar file: {}, {}", filePath, e.getMessage());
+        }
+
+
     }
 }
