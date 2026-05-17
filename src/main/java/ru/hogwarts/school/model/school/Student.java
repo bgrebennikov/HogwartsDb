@@ -1,5 +1,7 @@
 package ru.hogwarts.school.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -17,8 +19,14 @@ public class Student {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "faculty_id")
-    @JsonManagedReference
+    @JsonIgnoreProperties("students")
     private Faculty faculty;
+
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            mappedBy = "student",
+            orphanRemoval = true)
+    private Avatar avatar;
 
     public Student() {
     }
@@ -53,6 +61,23 @@ public class Student {
         this.age = age;
     }
 
+
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
+
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -63,13 +88,5 @@ public class Student {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, age);
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
-        this.faculty = faculty;
     }
 }

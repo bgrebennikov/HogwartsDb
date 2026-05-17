@@ -61,7 +61,7 @@ public class FacultyService {
             return facultyRepository.findAll();
         }
 
-        return facultyRepository.findAllByColorIgnoreCaseOrColorIgnoreCase(name, color);
+        return facultyRepository.findAllByColorIgnoreCaseOrNameIgnoreCase(name, color);
     }
 
     private Faculty asEntity(FacultyRequest dto) {
