@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -88,6 +90,11 @@ public class AvatarService {
     public Avatar findAvatar(Long studentId) {
         return avatarRepository.findByStudentId(studentId).orElseThrow(
                 () -> new NoSuchElementException("Avatar for student %s not found".formatted(studentId)));
+    }
+
+    public Collection<Avatar> findAll(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page-1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
     private byte[] generateImagePreview(Path filePath) throws IOException {
