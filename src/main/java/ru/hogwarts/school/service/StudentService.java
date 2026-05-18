@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hogwarts.school.model.dto.request.StudentRequest;
 import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
@@ -87,4 +88,15 @@ public class StudentService {
         return studentRepository.findAllByAgeBetween(minAge, maxAge);
     }
 
+    public Integer getStudentsCount() {
+        return studentRepository.getStudentsCount();
+    }
+
+    public Integer getStudentAvgAge() {
+        return studentRepository.getAvgStudentAge();
+    }
+
+    public Collection<Student> findAllStudents(Integer limit) {
+        return studentRepository.findAllStudentsWithLimit(limit);
+    }
 }
