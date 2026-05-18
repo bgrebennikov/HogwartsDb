@@ -1,8 +1,6 @@
 package ru.hogwarts.school.model.school;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -26,6 +24,7 @@ public class Student {
             cascade = CascadeType.ALL,
             mappedBy = "student",
             orphanRemoval = true)
+    @JsonIgnoreProperties("student")
     private Avatar avatar;
 
     public Student() {
