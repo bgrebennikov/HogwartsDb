@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Service
+@Transactional(readOnly = true)
 public class StudentService {
 
     private final StudentRepository studentRepository;
@@ -24,6 +25,7 @@ public class StudentService {
         this.facultyRepository = facultyRepository;
     }
 
+    @Transactional
     public Student createStudent(StudentRequest request) {
 
         if (request.id() != null) {
@@ -58,6 +60,7 @@ public class StudentService {
     }
 
 
+    @Transactional
     public Student updateStudent(StudentRequest request) {
         Student existingStudent = studentRepository.findById(request.id())
                 .orElseThrow(() -> new NoSuchElementException("Student with id %s not found".formatted(request.id())));
@@ -77,6 +80,7 @@ public class StudentService {
 
     }
 
+    @Transactional
     public void deleteStudentById(Long id) {
         studentRepository.deleteById(id);
     }
