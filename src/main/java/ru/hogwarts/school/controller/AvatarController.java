@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/avatar")
@@ -29,6 +30,18 @@ public class AvatarController {
         this.avatarService = avatarService;
     }
 
+    @GetMapping
+    public Collection<Avatar> getAll(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        if (page < 1 || size < 1) {
+            throw new IllegalArgumentException("Parameter page and size must be greater than 0");
+        }
+
+        return avatarService.findAll(page, size);
+
+    }
 
     @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Long upload(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
