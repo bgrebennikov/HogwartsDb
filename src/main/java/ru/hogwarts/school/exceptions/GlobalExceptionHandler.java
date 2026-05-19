@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleException(Exception ex) {
+    public ResponseEntity<Object> handleException(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(
                 new ErrorResponse(
                         ex.getMessage(),

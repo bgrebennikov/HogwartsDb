@@ -48,6 +48,34 @@ public class StudentController {
         return studentService.findStudentById(studentId);
     }
 
+
+    @GetMapping("/count")
+    @Operation(
+            summary = "Получить количество студентов",
+            description = "Возвращает количество записей о всех студентах из БД."
+    )
+    public Integer countStudents() {
+        return studentService.getStudentsCount();
+    }
+
+    @GetMapping("/avg/age")
+    @Operation(
+            summary = "Получить средний возраст студента",
+            description = "Возвращает средний возраст студента на основе всех учащихся. Если студентов нет - вернет 0."
+    )
+    Integer getAverageAge() {
+        return studentService.getStudentAvgAge();
+    }
+
+    @GetMapping("/last")
+    @Operation(
+            summary = "Получить последних студентов",
+            description = "По умолчанию возвращает 5 последних студентов. Укажите поличество записей в параметре \"limit\" "
+    )
+    Collection<Student> getLastNStudents(@RequestParam(defaultValue = "5") Integer limit) {
+        return studentService.findAllStudents(limit);
+    }
+
     @GetMapping("/{studentId}/faculty")
     @Operation(
             summary = "Получить факультет студента",

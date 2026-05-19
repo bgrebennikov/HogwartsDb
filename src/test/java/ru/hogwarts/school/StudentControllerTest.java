@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import ru.hogwarts.school.model.dto.request.StudentRequest;
@@ -12,7 +13,10 @@ import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -33,7 +37,7 @@ public class StudentControllerTest {
 
 
     @Test
-    void testPostStudent(){
+    void testPostStudent() {
         StudentRequest request = new StudentRequest(
                 null, "Harry", 22, null
         );
@@ -60,7 +64,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    void testGetStudent(){
+    void testGetStudent() {
         Student student = new Student();
         student.setId(123L);
         student.setName("Hermione");
@@ -85,7 +89,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    void testUpdateStudent(){
+    void testUpdateStudent() {
         StudentRequest request = new StudentRequest(
                 1L, "New Name", 20, null
         );
@@ -117,7 +121,7 @@ public class StudentControllerTest {
     }
 
     @Test
-    void testDeleteStudent(){
+    void testDeleteStudent() {
         doNothing().when(studentRepository).deleteById(1L);
 
         restTestClient.delete()
@@ -126,6 +130,67 @@ public class StudentControllerTest {
                 .expectStatus().isOk();
 
         verify(studentRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testGetStudentsCount() {
+
+        when(studentRepository.getStudentsCount()).thenReturn(5);
+
+
+        restTestClient.get()
+                .uri("/student/count")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Integer.class)
+                .value(actual -> {
+                    Assertions.assertNotNull(actual);
+                    Assertions.assertEquals(5, actual);
+                });
+
+
+    }
+
+    @Test
+    void testGetAvgStudentsAge() {
+
+        when(studentRepository.getAvgStudentAge()).thenReturn(20);
+
+        restTestClient.get()
+                .uri("/student/avg/age")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Integer.class)
+                .value(actual -> {
+                    Assertions.assertNotNull(actual);
+                    Assertions.assertEquals(20, actual);
+                });
+    }
+
+    @Test
+    void testGetLastNStudents() {
+
+        Collection<Student> students = LongStream.range(0, 5)
+                .mapToObj(index -> new Student(index, "Student_%s".formatted(index), 20 + (int) index))
+                .toList();
+
+
+        when(studentRepository.findAllStudentsWithLimit(5)).thenReturn(
+                students
+        );
+
+        restTestClient.get()
+                .uri(builder -> builder
+                        .path("/student/last").queryParam("limit", 5).build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<Student>>() {
+
+                })
+                .value(actual -> {
+                    Assertions.assertNotNull(actual);
+                    Assertions.assertEquals(5, actual.size());
+                });
     }
 
 }

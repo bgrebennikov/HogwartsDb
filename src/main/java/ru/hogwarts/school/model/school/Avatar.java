@@ -1,5 +1,7 @@
 package ru.hogwarts.school.model.school;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Arrays;
@@ -17,10 +19,12 @@ public class Avatar {
     private String mediaType;
 
     @Lob
+    @JsonIgnore
     private byte[] data;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
+    @JsonIgnoreProperties("avatar")
     private Student student;
 
     public Avatar() {
@@ -28,6 +32,10 @@ public class Avatar {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFilePath() {

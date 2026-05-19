@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hogwarts.school.model.dto.request.StudentRequest;
 import ru.hogwarts.school.model.school.Faculty;
 import ru.hogwarts.school.model.school.Student;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Service
+@Transactional(readOnly = true)
 public class StudentService {
 
     private final StudentRepository studentRepository;
@@ -23,6 +25,7 @@ public class StudentService {
         this.facultyRepository = facultyRepository;
     }
 
+    @Transactional
     public Student createStudent(StudentRequest request) {
 
         if (request.id() != null) {
@@ -57,6 +60,7 @@ public class StudentService {
     }
 
 
+    @Transactional
     public Student updateStudent(StudentRequest request) {
         Student existingStudent = studentRepository.findById(request.id())
                 .orElseThrow(() -> new NoSuchElementException("Student with id %s not found".formatted(request.id())));
@@ -76,6 +80,7 @@ public class StudentService {
 
     }
 
+    @Transactional
     public void deleteStudentById(Long id) {
         studentRepository.deleteById(id);
     }
@@ -87,4 +92,15 @@ public class StudentService {
         return studentRepository.findAllByAgeBetween(minAge, maxAge);
     }
 
+    public Integer getStudentsCount() {
+        return studentRepository.getStudentsCount();
+    }
+
+    public Integer getStudentAvgAge() {
+        return studentRepository.getAvgStudentAge();
+    }
+
+    public Collection<Student> findAllStudents(Integer limit) {
+        return studentRepository.findAllStudentsWithLimit(limit);
+    }
 }
