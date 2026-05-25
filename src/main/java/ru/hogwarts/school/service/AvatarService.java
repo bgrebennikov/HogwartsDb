@@ -30,6 +30,7 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 public class AvatarService {
 
     private static final Logger log = LoggerFactory.getLogger(AvatarService.class);
+
     private final AvatarRepository avatarRepository;
     private final StudentRepository studentRepository;
 
@@ -43,20 +44,27 @@ public class AvatarService {
 
     @PostConstruct
     public void initDirs() {
+        log.info("Initialization of avatar upload directory: {}", avatarDirPath);
         try {
             Files.createDirectories(Path.of(avatarDirPath));
         } catch (IOException e) {
+            log.error("Critical error during avatar directory initialization for path: {}", avatarDirPath, e);
             throw new RuntimeException("Could not create avatar directory: %s".formatted(avatarDirPath));
         }
     }
 
     public Long uploadAvatar(Long studentId, MultipartFile file) {
+        log.info("was invoked method for upload avatar for student with id: {}", studentId);
         try {
-            Student student = studentRepository.findById(studentId).orElseThrow(
-                    () -> new NoSuchElementException("Cannot find student with id: %s".formatted(studentId)));
+            Student student = studentRepository.findById(studentId).orElseThrow(() -> {
+                log.warn("Cannot upload avatar. Student with id {} not found", studentId);
+                return new NoSuchElementException("Cannot find student with id: %s".formatted(studentId));
+            });
 
-            Path filepath = Path.of(avatarDirPath, studentId + "." + getExtensions(Objects.requireNonNull(file.getOriginalFilename())));
+            String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+            Path filepath = Path.of(avatarDirPath, studentId + "." + getExtensions(originalFilename));
 
+            log.debug("Saving avatar file to disk paths: {}", filepath);
             saveFileToDisk(file, filepath);
 
             Avatar avatar = Objects.requireNonNullElse(student.getAvatar(), new Avatar());
@@ -68,16 +76,21 @@ public class AvatarService {
             avatar.setFileSize(file.getSize());
             avatar.setMediaType(file.getContentType());
 
+            log.debug("Generating small image preview for student id: {}", studentId);
             avatar.setData(generateImagePreview(filepath));
 
-            return avatarRepository.save(avatar).getId();
+            Avatar savedAvatar = avatarRepository.save(avatar);
+            log.info("Avatar successfully uploaded and saved database with id: {}", savedAvatar.getId());
+            return savedAvatar.getId();
 
         } catch (IOException e) {
+            log.error("I/O error occurred while uploading avatar for student id: {}", studentId, e);
             throw new UncheckedIOException("Ошибка при загрузке аватара студента: %s".formatted(studentId), e);
         }
     }
 
     private void saveFileToDisk(MultipartFile file, Path filepath) throws IOException {
+        log.info("Saving avatar file to disk path: {}", filepath);
         Files.deleteIfExists(filepath);
         try (InputStream is = file.getInputStream();
              OutputStream os = Files.newOutputStream(filepath, CREATE_NEW);
@@ -88,12 +101,22 @@ public class AvatarService {
     }
 
     public Avatar findAvatar(Long studentId) {
-        return avatarRepository.findByStudentId(studentId).orElseThrow(
-                () -> new NoSuchElementException("Avatar for student %s not found".formatted(studentId)));
+        log.info("was invoked method for find avatar by student id: {}", studentId);
+        return avatarRepository.findByStudentId(studentId).orElseThrow(() -> {
+            log.warn("Avatar for student id {} was not found", studentId);
+            return new NoSuchElementException("Avatar for student %s not found".formatted(studentId));
+        });
     }
 
     public Collection<Avatar> findAll(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page-1, size);
+        log.info("was invoked method for find all avatars with pagination. Page: {}, Size: {}", page, size);
+
+        if (page < 1 || size < 1) {
+            log.warn("Invalid pagination parameters received. Page: {}, Size: {}", page, size);
+            throw new IllegalArgumentException("Page and size parameters must be greater than 0");
+        }
+
+        PageRequest pageRequest = PageRequest.of(page - 1, size);
         return avatarRepository.findAll(pageRequest).getContent();
     }
 
@@ -103,7 +126,6 @@ public class AvatarService {
             BufferedImage image = ImageIO.read(bis);
 
             int height = image.getHeight() / (image.getWidth() / 100);
-
             int imageType = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
 
             BufferedImage preview = new BufferedImage(100, height, imageType);
@@ -124,21 +146,27 @@ public class AvatarService {
 
     @Transactional
     public void deleteAvatar(Long studentId) {
+        log.info("was invoked method for delete avatar by student id: {}", studentId);
 
-        Avatar avatar = avatarRepository.findByStudentId(studentId).orElseThrow(
-                () -> new NoSuchElementException("Avatar for student id: %s not found".formatted(studentId))
-        );
+        Avatar avatar = avatarRepository.findByStudentId(studentId).orElseThrow(() -> {
+            log.warn("Cannot delete avatar. Avatar for student id: {} not found", studentId);
+            return new NoSuchElementException("Avatar for student id: %s not found".formatted(studentId));
+        });
 
         String filePath = avatar.getFilePath();
 
         avatarRepository.delete(avatar);
+        log.debug("Avatar entity removed from database for student id: {}", studentId);
 
         try {
-            Files.deleteIfExists(Path.of(filePath));
+            boolean deleted = Files.deleteIfExists(Path.of(filePath));
+            if (deleted) {
+                log.info("Avatar file successfully deleted from disk: {}", filePath);
+            } else {
+                log.warn("Avatar file did not exist on disk during deletion request: {}", filePath);
+            }
         } catch (IOException e) {
-            log.error("Cannot delete avatar file: {}, {}", filePath, e.getMessage());
+            log.error("Cannot delete avatar file from disk: {}, Exception message: {}", filePath, e.getMessage(), e);
         }
-
-
     }
 }
