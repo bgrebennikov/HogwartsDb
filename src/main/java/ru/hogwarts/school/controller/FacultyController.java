@@ -51,6 +51,9 @@ public class FacultyController {
     }
 
     @GetMapping("/longest-name")
+    @Operation(
+            summary = "Возвращает самое длинное имя факультета"
+    )
     public String getLongestName(){
         return facultyService.getLongestFacultyName();
     }
