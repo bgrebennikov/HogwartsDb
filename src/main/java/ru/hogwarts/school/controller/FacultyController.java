@@ -50,6 +50,11 @@ public class FacultyController {
         return facultyService.findFacultyById(facultyId);
     }
 
+    @GetMapping("/longest-name")
+    public String getLongestName(){
+        return facultyService.getLongestFacultyName();
+    }
+
     @GetMapping("/{facultyId}/students")
     @Operation(
             summary = "Получить студентов факультета",
