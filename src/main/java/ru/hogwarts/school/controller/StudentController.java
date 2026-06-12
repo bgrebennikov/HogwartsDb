@@ -37,6 +37,18 @@ public class StudentController {
         return studentService.findAllStudents(minAge, maxAge);
     }
 
+    @GetMapping("/names")
+    @Operation(
+            summary = "Получить имена студентов в алфавитном порядке"
+    )
+    public Collection<String> findAllStudentsByNames(
+            @RequestParam(defaultValue = "А")
+            @Parameter(description = "Получить имена всех студентов, чье имя начинается с определенной буквы")
+            String startWith
+    ) {
+        return studentService.getStudentsNames(startWith);
+    }
+
     @GetMapping("/{studentId}")
     @Operation(
             summary = "Найти студента по ID",
