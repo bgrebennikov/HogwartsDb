@@ -12,8 +12,8 @@ import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.Collection;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +56,19 @@ public class StudentService {
 
         logger.debug("Saving new student entity to the database: {}", student.getName());
         return studentRepository.save(student);
+    }
+
+    public Collection<String> getStudentsNames(String startWith) {
+        logger.info("was invoked method for getting sorted student names starting with A");
+
+        List<Student> students = studentRepository.findAll();
+
+        return students.stream()
+                .parallel()
+                .filter(s -> s.getName() != null && (s.getName().toLowerCase().startsWith(startWith.toLowerCase())))
+                .map(s -> s.getName().toUpperCase())
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public Student findStudentById(Long id) {
@@ -115,7 +128,7 @@ public class StudentService {
 
     public Collection<Student> findAllStudents(int minAge, int maxAge) {
 
-        if (minAge < 0){
+        if (minAge < 0) {
             minAge = 0;
         }
         if (maxAge < minAge) {
