@@ -71,6 +71,17 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
+    public Integer getAvgStudentAgeWithStream() {
+        logger.info("was invoked method for getting average age of all students");
+        List<Student> students = studentRepository.findAll();
+
+        return (int) students.stream()
+                        .parallel()
+                        .mapToInt(Student::getAge)
+                        .average()
+                        .orElse(0);
+    }
+
     public Student findStudentById(Long id) {
         logger.info("was invoked method for find Student by id: {}", id);
         return studentRepository.findById(id)

@@ -79,6 +79,15 @@ public class StudentController {
         return studentService.getStudentAvgAge();
     }
 
+    @GetMapping("/avg/age/stream")
+    @Operation(
+            summary = "Получить средний возраст студента с использованием parallel stream",
+            description = "Возвращает средний возраст студента на основе всех учащихся. Если студентов нет - вернет 0."
+    )
+    Integer getAverageAgeWithStream() {
+        return studentService.getAvgStudentAgeWithStream();
+    }
+
     @GetMapping("/last")
     @Operation(
             summary = "Получить последних студентов",
