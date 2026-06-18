@@ -171,4 +171,34 @@ public class StudentService {
 
         return studentRepository.findAllStudentsWithLimit(limit);
     }
+
+    public void printStudentsParallel(){
+        logger.info("was invoked method for printStudentsParallel");
+        List<Student> students = studentRepository.findAll().stream()
+                .limit(6)
+                .toList();
+
+        if (students.size() < 6) {
+            logger.warn("Not enough students to parallel print (found {}, but need > 6)", students.size());
+            return;
+        }
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+
+        Thread th1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+        Thread th2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        th1.start();
+        th2.start();
+
+    }
 }
