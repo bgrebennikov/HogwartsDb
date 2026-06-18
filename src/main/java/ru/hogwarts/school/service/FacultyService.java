@@ -11,7 +11,9 @@ import ru.hogwarts.school.model.school.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 public class FacultyService {
@@ -41,6 +43,17 @@ public class FacultyService {
                     logger.warn("Faculty with id {} was not found", id);
                     return new NoSuchElementException("Faculty with id %s not found".formatted(id));
                 });
+    }
+
+    public String getLongestFacultyName() {
+        logger.info("was invoked method for find Faculty by name");
+
+        return facultyRepository.findAll().stream()
+                .parallel()
+                .map(Faculty::getName)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("Not faculties found");
     }
 
     public Collection<Student> getStudentsByFacultyId(Long facultyId) {
